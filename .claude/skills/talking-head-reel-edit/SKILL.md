@@ -38,7 +38,7 @@ never stop.
    Code: the uploads folder; claude.ai chat: the attached files). If there are
    several clips, join them first:
    `ffmpeg -f concat -safe 0 -i list.txt -c:v libx264 -crf 16 -c:a aac raw.mp4`
-   (normalise them first if their sizes differ). Ask for the script she read,
+   (or use `scripts/assemble.py`, which normalises them). Ask for the script she read,
    or use the one Claude wrote for her. Also ask for any screenshots, meme
    clips or music she wants included.
 3. **Transcribe:** `python scripts/transcribe.py raw.mp4 words.json --script script.txt`.
@@ -76,6 +76,35 @@ never stop.
    download. Include a suggested post caption and cover frame time. Never
    commit videos, footage or screenshots to the repository, because it's a
    public site.
+
+## No-talking reels (hair/outfit reveals, transformations, day-in-the-life)
+No speech means no captions. The story is told with text and graphics instead.
+1. Join and speed-ramp the clips:
+   `python scripts/assemble.py raw.mp4 beats.json "clip1.MOV@2" "clip2.MOV@1.5" "reveal.MOV" --mute`.
+   Speed up the process parts (2×) and keep the reveal at 1×. Use `--mute`
+   and tell her to add a trending sound in Instagram, which is free and helps
+   reach. It prints beat indices per clip (0.5 s markers) and the `split_at`
+   values for clip boundaries.
+2. In the plan, set `"words": "beats.json"`, `"captions": {"on": false}`,
+   `"cut": {"pad": 0}` and `"split_at"` (clip boundaries plus a mid-clip split
+   or two, so the zoom changes every 3–4 s). Set `"glow": true` when text sits
+   on busy or light backgrounds.
+3. Story arc: a hook title ("Part 2: *the reveal*" + 👀) → numbered steps over
+   the process → an emoji row (✨✨✨) on the reveal frame → "The *after*" →
+   a detail callout (note + arrow) → a CTA ("rate it 1–10 in the comments").
+
+## Mixing text styles and graphics
+- Inside any header text: `*italic*` (serif italic), `==cream highlight==`,
+  `~handwritten~`, and `\n` for a line break. Mix a serif title with an
+  italic phrase, e.g. "Step 1: *the chop*".
+- `label` style: dark text in a white box, for facts and stats (like her
+  date pill).
+- `graphic` overlays (drawn, pop in like stickers): `arrow`, `circle`,
+  `underline`, `sparkle`, `heart`, in white, cream or dark, with `size`,
+  `rotate` and `flip`. Point arrows at the detail being talked about and
+  circle the number on a proof card.
+- Use 2–3 text styles per screen at most: a serif header, a handwritten line
+  and an optional cream note.
 
 ## Layout rules
 - The **face is sacred.** Overlays go over the chest/torso (y 0.55–0.70) or

@@ -56,6 +56,10 @@ the nearest kept word is used. `"start"` and `"end"` are also accepted for
 | `overlays[].type` | `image` = PNG/JPG screenshot (pops in with a card shadow; `"card": false` turns the shadow off) · `emoji` = colour emoji sticker (`count` repeats it in a row; `size` is the width fraction per emoji) · `video` = meme/B-roll clip (`audio: true` mixes in its sound at `volume`). |
 | `overlays[]` timing | Starts at word `at`. Ends at the end of word `to`, or after `dur` seconds (default 1.3). |
 | `overlays[]` position | `x`, `y` = centre of the overlay as a fraction of the frame; `w` = width fraction (image/video). `full: true` fills the whole frame (cutaway). |
+| `split_at` | Beat or word indices that always start a new cut, at clip boundaries or to force a zoom change. |
+| `glow` | `true` adds a soft dark glow behind header text (per header or for the whole plan). Use it on busy or light backgrounds. |
+| header text markup | `*italic*`, `==cream==`, `~handwritten~`, and `\n` for a line break. `label` style = text in a white box. `color`: `white`, `cream` or `dark`. |
+| `overlays[].type: graphic` | `shape`: `arrow`, `circle`, `underline`, `sparkle` or `heart`. Options: `color` (white, cream, dark), `size` (width fraction), `rotate` (deg), `flip`. |
 | `music` | Looped under the voice. Keep `volume` between 0.05 and 0.10. |
 
 Output: 1080×1920, 30 fps, H.264 + AAC, loudness normalised to -14 LUFS.

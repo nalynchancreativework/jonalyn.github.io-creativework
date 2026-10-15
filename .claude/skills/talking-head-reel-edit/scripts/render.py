@@ -10,6 +10,7 @@ this script works out where they land after the pauses/flubs are cut.
 """
 import argparse
 import json
+import re
 import shutil
 import subprocess
 import sys
@@ -35,7 +36,10 @@ HEADER_STYLES = {
     "script":  (HAND,  100, WHITE, 0.175, 0.86),
     "sub":     (HAND,   90, WHITE, 0.268, 0.92),
     "note":    (HAND,   84, CREAM, 0.330, 0.36),
+    "label":   (SERIF,  64, "&H00261C1A", 0.600, 0.80),   # dark text in a white box
 }
+INK = {"white": WHITE, "cream": CREAM, "dark": "&H00261C1A"}
+RGB = {"white": (255, 255, 255), "cream": (243, 230, 180), "dark": (26, 28, 38)}
 
 
 def run(cmd, **kw):
@@ -58,7 +62,7 @@ def snap(t):
     return round(t * FPS) / FPS
 
 
-def build_segments(words, drop, max_gap, pad, duration):
+def build_segments(words, drop, max_gap, pad, duration, split_at=()):
     dropped = set()
     for r in drop:
         a, b = (r, r) if isinstance(r, int) else (r[0], r[-1])
@@ -68,7 +72,7 @@ def build_segments(words, drop, max_gap, pad, duration):
         sys.exit("every word was dropped")
     segs, cur = [], [kept[0]]
     for prev, w in zip(kept, kept[1:]):
-        contiguous = w["i"] == prev["i"] + 1
+        contiguous = w["i"] == prev["i"] + 1 and w["i"] not in split_at
         if contiguous and w["s"] - prev["e"] <= max_gap:
             cur.append(w)
         else:
@@ -129,6 +133,15 @@ def esc(text):
     return text.replace("\\", "\\\\").replace("{", "(").replace("}", ")").replace("\n", "\\N")
 
 
+def markup(text, font, colour):
+    """Mixed styles inside one header: *italic*, ==cream highlight==, ~handwritten~."""
+    t = esc(text)
+    t = re.sub(r"\*(.+?)\*", r"{\\i1}\1{\\i0}", t)
+    t = re.sub(r"==(.+?)==", lambda m: f"{{\\c{CREAM}}}{m.group(1)}{{\\c{colour}}}", t)
+    t = re.sub(r"~(.+?)~", lambda m: f"{{\\fn{HAND}\\fs*1.0}}{m.group(1)}{{\\fn{font}}}", t)
+    return t.replace("\\fs*1.0", "")
+
+
 def build_ass(plan, segments, times, total):
     cap = {"on": True, "x": 0.24, "y": 0.455, "size": 100, "highlight": [], **plan.get("captions", {})}
     lines = [
@@ -143,6 +156,10 @@ def build_ass(plan, segments, times, total):
     for name, (font, size, col, _y, wrap) in HEADER_STYLES.items():
         margin = int(W * (1 - wrap) / 2)
         spacing = -1 if font == SERIF else 0
+        if name == "label":   # opaque white box behind the text
+            lines.append(f"Style: {name},{font},{size},{col},{col},{WHITE},&H70000000,0,0,0,0,100,100,"
+                         f"0,0,3,16,3,5,{margin},{margin},0,1")
+            continue
         lines.append(f"Style: {name},{font},{size},{col},{col},&H00000000,{SHADOW},0,0,0,0,100,100,"
                      f"{spacing},0,1,0,2.2,5,{margin},{margin},0,1")
     lines += ["", "[Events]",
@@ -194,9 +211,14 @@ def build_ass(plan, segments, times, total):
             tags += f"\\fs{h['size']}"
         if "rotate" in h or style == "note":
             tags += f"\\frz{h.get('rotate', 8)}"
-        if h.get("color") == "cream":
-            tags += f"\\c{CREAM}"
-        lines.append(f"Dialogue: 1,{ass_time(st)},{ass_time(en)},{style},,0,0,0,,{{{tags}}}{esc(h['text'])}")
+        # Soft dark glow so thin handwriting/serif stays readable on busy or light backgrounds.
+        if style != "label" and h.get("glow", plan.get("glow", False)):
+            tags += "\\bord5\\3c&H000000&\\3a&H8C&\\blur7"
+        if h.get("color") in INK:
+            col = INK[h["color"]]
+            tags += f"\\c{col}"
+        lines.append(f"Dialogue: 1,{ass_time(st)},{ass_time(en)},{style},,0,0,0,,{{{tags}}}"
+                     f"{markup(h['text'], _f, col)}")
     return "\n".join(lines) + "\n"
 
 
@@ -216,6 +238,70 @@ def emoji_png(chars, count, size_px, path):
     img = Image.new("RGBA", (one.width * count + gap * (count - 1), one.height), (0, 0, 0, 0))
     for k in range(count):
         img.alpha_composite(one, (k * (one.width + gap), 0))
+    img.save(path)
+
+
+def graphic_png(shape, colour, size_px, path, flip=False):
+    """Hand-drawn style graphics: arrow, circle, underline, sparkle, heart."""
+    from PIL import Image, ImageDraw
+    import math
+    S = 4  # supersample for smooth strokes
+    w = size_px * S
+    h = int(w * {"arrow": 0.75, "circle": 0.62, "underline": 0.22, "sparkle": 1.0, "heart": 0.9}[shape])
+    img = Image.new("RGBA", (w, h), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    col = RGB.get(colour, RGB["white"]) + (255,)
+    lw = max(3, int(w * 0.035))
+
+    def bez(p0, p1, p2, n=40):
+        return [((1 - t) ** 2 * p0[0] + 2 * (1 - t) * t * p1[0] + t * t * p2[0],
+                 (1 - t) ** 2 * p0[1] + 2 * (1 - t) * t * p1[1] + t * t * p2[1])
+                for t in (i / n for i in range(n + 1))]
+
+    def stroke(pts):
+        d.line(pts, fill=col, width=lw, joint="curve")
+        r = lw / 2
+        for x, y in (pts[0], pts[-1]):
+            d.ellipse((x - r, y - r, x + r, y + r), fill=col)
+
+    if shape == "arrow":          # loose curved arrow pointing down-right
+        pts = bez((w * .08, h * .15), (w * .55, h * .02), (w * .86, h * .80))
+        stroke(pts)
+        tip, prev = pts[-1], pts[-6]
+        ang = math.atan2(tip[1] - prev[1], tip[0] - prev[0])
+        for da in (2.5, -2.5):
+            a = ang + math.pi + da * 0.18
+            stroke([tip, (tip[0] + math.cos(a) * w * .16, tip[1] + math.sin(a) * w * .16)])
+    elif shape == "circle":       # imperfect hand-drawn loop
+        cx, cy, rx, ry = w / 2, h / 2, w * .45, h * .40
+        pts = [(cx + rx * (1 + .04 * math.sin(3 * t)) * math.cos(t),
+                cy + ry * (1 + .05 * math.cos(2 * t)) * math.sin(t))
+               for t in (i / 80 * 2 * math.pi * 1.08 - 0.3 for i in range(81))]
+        stroke(pts)
+    elif shape == "underline":    # squiggle
+        pts = [(w * (.04 + .92 * i / 60), h * (.5 + .28 * math.sin(i / 60 * 4 * math.pi)))
+               for i in range(61)]
+        stroke(pts)
+    elif shape == "sparkle":      # four-point star + small dots
+        cx, cy, r = w * .45, h * .5, w * .38
+        star = []
+        for k in range(8):
+            a = k * math.pi / 4 - math.pi / 2
+            rr = r if k % 2 == 0 else r * .22
+            star.append((cx + rr * math.cos(a), cy + rr * math.sin(a)))
+        d.polygon(star, fill=col)
+        for (x, y, rr) in ((w * .86, h * .18, w * .05), (w * .85, h * .8, w * .035)):
+            d.ellipse((x - rr, y - rr, x + rr, y + rr), fill=col)
+    elif shape == "heart":
+        pts = [(w / 2 + w * .028 * 16 * math.sin(t) ** 3,
+                h * .45 - h * .03 * (13 * math.cos(t) - 5 * math.cos(2 * t) - 2 * math.cos(3 * t) - math.cos(4 * t)))
+               for t in (i / 90 * 2 * math.pi for i in range(91))]
+        d.polygon(pts, fill=col)
+    else:
+        sys.exit(f"unknown graphic {shape}")
+    img = img.resize((size_px, max(1, h // S)), Image.LANCZOS)
+    if flip:
+        img = img.transpose(Image.FLIP_LEFT_RIGHT)
     img.save(path)
 
 
@@ -265,7 +351,8 @@ def main():
     duration = float(info["format"]["duration"])
     vstream = next(s for s in info["streams"] if s["codec_type"] == "video")
     cut = {"max_gap": 0.30, "pad": 0.07, **plan.get("cut", {})}
-    segments, total = build_segments(words, plan.get("drop", []), cut["max_gap"], cut["pad"], duration)
+    segments, total = build_segments(words, plan.get("drop", []), cut["max_gap"], cut["pad"], duration,
+                                     set(plan.get("split_at", [])))
     times = word_times(segments)
 
     if a.timeline:
@@ -322,10 +409,18 @@ def main():
             dur = max(0.2, en - st)
             kind = ov.get("type", "image")
             cx, cy = W * ov.get("x", 0.5), H * ov.get("y", 0.62)
-            if kind in ("image", "emoji"):
+            if kind in ("image", "emoji", "graphic"):
                 if kind == "emoji":
                     png = tmp / f"emoji{k}.png"
                     emoji_png(ov["emoji"], ov.get("count", 1), int(W * ov.get("size", 0.11)), png)
+                    width = None
+                elif kind == "graphic":
+                    png = tmp / f"graphic{k}.png"
+                    graphic_png(ov["shape"], ov.get("color", "white"), int(W * ov.get("size", 0.2)),
+                                png, ov.get("flip", False))
+                    if ov.get("rotate"):
+                        from PIL import Image
+                        Image.open(png).rotate(-ov["rotate"], expand=True, resample=Image.BICUBIC).save(png)
                     width = None
                 else:
                     png = P(ov["file"])
