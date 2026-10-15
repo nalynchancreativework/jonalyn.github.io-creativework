@@ -112,6 +112,19 @@ so the pastel title reads on light walls.
 - Use 2–3 text styles per screen at most: a serif header, a handwritten line
   and an optional cream note.
 
+## Background music
+Never bake a copyrighted song into the file: Instagram can mute or block the
+reel, and the reel won't be linked to the song's audio page. Export the reel
+silent (`--mute`) or with her own voice. Then help her pick the music:
+- Search the web for this week's trending Instagram Reels audio that fits the
+  mood (reveals and transformations need a clear beat drop). Suggest 3–5
+  songs with sources, and tell her to look for the ↗ trending arrow in the app.
+- Tell her the exact second the drop should land (the reveal, e.g. 0:12).
+  In Instagram: tap + → Reel → pick the video → music note → choose the song →
+  drag the song's start so the drop hits that second.
+- If songs are missing, it's a business-account music limit. Switching to a
+  Creator account (Settings → Account type) is free.
+
 ## Layout rules
 - The **face is sacred.** Overlays go over the chest/torso (y 0.55–0.70) or
   the top band. Stickers go beside the head (x 0.75–0.8) or in the top band.
