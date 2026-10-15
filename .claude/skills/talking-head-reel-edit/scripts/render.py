@@ -29,6 +29,7 @@ NOTE = "Kalam"             # side notes
 WHITE = "&H00FFFFFF"
 CREAM = "&H00B4E6F3"         # #F3E6B4 in ASS BGR - highlight / side-note colour
 SHADOW = "&H9E000000"        # soft, mostly transparent black
+ACCENT = "#F7C1C4"           # Jonalyn's title colour (blush pink); plan "accent" overrides, "white" for none
 
 HEADER_STYLES = {
     #          font   size colour  default y   wrap width (fraction of frame)
@@ -215,7 +216,7 @@ def build_ass(plan, segments, times, total):
         # Soft dark glow so thin handwriting/serif stays readable on busy or light backgrounds.
         if style != "label" and h.get("glow", plan.get("glow", False)):
             tags += "\\bord5\\3c&H000000&\\3a&H8C&\\blur7"
-        colour_name = h.get("color") or (plan.get("accent") if style in ("title", "section") else None)
+        colour_name = h.get("color") or (plan.get("accent", ACCENT) if style in ("title", "section") else None)
         if colour_name in INK:
             col = INK[colour_name]
             tags += f"\\c{col}"

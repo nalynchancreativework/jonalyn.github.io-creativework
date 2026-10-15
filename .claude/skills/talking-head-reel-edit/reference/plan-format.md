@@ -57,6 +57,7 @@ the nearest kept word is used. `"start"` and `"end"` are also accepted for
 | `overlays[]` timing | Starts at word `at`. Ends at the end of word `to`, or after `dur` seconds (default 1.3). |
 | `overlays[]` position | `x`, `y` = centre of the overlay as a fraction of the frame; `w` = width fraction (image/video). `full: true` fills the whole frame (cutaway). |
 | `split_at` | Beat or word indices that always start a new cut, at clip boundaries or to force a zoom change. |
+| `accent` | Colour of `title`/`section` headers. Default blush `#F7C1C4`; any `#RRGGBB`, or `white`, `cream`, `dark`. |
 | `glow` | `true` adds a soft dark glow behind header text (per header or for the whole plan). Use it on busy or light backgrounds. |
 | header text markup | `*italic*`, `==cream==`, `~handwritten~`, and `\n` for a line break. `label` style = text in a white box. `color`: `white`, `cream` or `dark`. |
 | `overlays[].type: graphic` | `shape`: `arrow`, `circle`, `underline`, `sparkle` or `heart`. Options: `color` (white, cream, dark), `size` (width fraction), `rotate` (deg), `flip`. |

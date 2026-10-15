@@ -93,6 +93,12 @@ No speech means no captions. The story is told with text and graphics instead.
    the process → an emoji row (✨✨✨) on the reveal frame → "The *after*" →
    a detail callout (note + arrow) → a CTA ("rate it 1–10 in the comments").
 
+## Brand colours (Jonalyn's choice)
+Titles and section headers are **blush pink #F7C1C4** by default. Set
+`"accent"` in the plan to override it (a hex code, or `"white"`). Handwritten
+lines stay white, and highlights and notes stay cream. Keep `"glow": true`
+so the pastel title reads on light walls.
+
 ## Mixing text styles and graphics
 - Inside any header text: `*italic*` (serif italic), `==cream highlight==`,
   `~handwritten~`, and `\n` for a line break. Mix a serif title with an
