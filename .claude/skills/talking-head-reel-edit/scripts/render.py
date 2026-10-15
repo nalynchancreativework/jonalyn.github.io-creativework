@@ -24,19 +24,20 @@ CACHE = Path.home() / ".cache" / "reel-edit"
 
 # --- Style constants (measured from the reference frames) --------------------
 SERIF = "Instrument Serif"
-HAND = "La Belle Aurore"
+HAND = "Patrick Hand"      # readable handwriting for lines under titles
+NOTE = "Kalam"             # side notes
 WHITE = "&H00FFFFFF"
 CREAM = "&H00B4E6F3"         # #F3E6B4 in ASS BGR - highlight / side-note colour
 SHADOW = "&H9E000000"        # soft, mostly transparent black
 
 HEADER_STYLES = {
     #          font   size colour  default y   wrap width (fraction of frame)
-    "title":   (SERIF, 158, WHITE, 0.150, 0.88),
-    "section": (SERIF, 140, WHITE, 0.150, 0.88),
-    "script":  (HAND,  100, WHITE, 0.175, 0.86),
-    "sub":     (HAND,   90, WHITE, 0.268, 0.92),
-    "note":    (HAND,   84, CREAM, 0.330, 0.36),
-    "label":   (SERIF,  64, "&H00261C1A", 0.600, 0.80),   # dark text in a white box
+    "title":   (SERIF, 198, WHITE, 0.190, 0.90),
+    "section": (SERIF, 175, WHITE, 0.165, 0.90),
+    "script":  (HAND,  130, WHITE, 0.190, 0.90),
+    "sub":     (HAND,  118, WHITE, 0.310, 0.92),
+    "note":    (NOTE,  100, CREAM, 0.400, 0.42),
+    "label":   (SERIF,  80, "&H00261C1A", 0.600, 0.84),   # dark text in a white box
 }
 INK = {"white": WHITE, "cream": CREAM, "dark": "&H00261C1A"}
 RGB = {"white": (255, 255, 255), "cream": (243, 230, 180), "dark": (26, 28, 38)}
@@ -143,7 +144,7 @@ def markup(text, font, colour):
 
 
 def build_ass(plan, segments, times, total):
-    cap = {"on": True, "x": 0.24, "y": 0.455, "size": 100, "highlight": [], **plan.get("captions", {})}
+    cap = {"on": True, "x": 0.24, "y": 0.455, "size": 125, "highlight": [], **plan.get("captions", {})}
     lines = [
         "[Script Info]", "ScriptType: v4.00+", f"PlayResX: {W}", f"PlayResY: {H}",
         "WrapStyle: 0", "ScaledBorderAndShadow: yes", "",
@@ -214,8 +215,13 @@ def build_ass(plan, segments, times, total):
         # Soft dark glow so thin handwriting/serif stays readable on busy or light backgrounds.
         if style != "label" and h.get("glow", plan.get("glow", False)):
             tags += "\\bord5\\3c&H000000&\\3a&H8C&\\blur7"
-        if h.get("color") in INK:
-            col = INK[h["color"]]
+        colour_name = h.get("color") or (plan.get("accent") if style in ("title", "section") else None)
+        if colour_name in INK:
+            col = INK[colour_name]
+            tags += f"\\c{col}"
+        elif isinstance(colour_name, str) and colour_name.startswith("#") and len(colour_name) == 7:
+            r, g, b = colour_name[1:3], colour_name[3:5], colour_name[5:7]
+            col = f"&H00{b}{g}{r}".upper()
             tags += f"\\c{col}"
         lines.append(f"Dialogue: 1,{ass_time(st)},{ass_time(en)},{style},,0,0,0,,{{{tags}}}"
                      f"{markup(h['text'], _f, col)}")

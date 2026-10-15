@@ -16,10 +16,10 @@ open any editing app.
 |---|---|---|
 | **Footage** | Natural home setting with warm daylight. She talks to camera, framed from the head to the waist, holding a small wireless mic. No filter or colour grade. | Kept as shot (HDR is tone-mapped to SDR) |
 | **Cuts** | Hard jump cuts with every pause removed. The framing changes between cuts (punch-ins). | Pauses over 0.30 s are cut. Zoom alternates 1.00× and 1.12× per cut, and emphasis words get 1.22×. |
-| **Captions** | **One word at a time** in a high-contrast **serif**, white with a soft shadow. They sit **left of her face** at about mid-height, never at the bottom. Emphasis words are **cream/yellow** (e.g. "watching", "sponge", "successful"). | Instrument Serif 100 px, centred at x 24%, y 45.5%. Highlights are #F3E6B4. Words shorter than 0.15 s are paired with the next word. |
-| **Hook title** | A big serif headline over 2 lines at the top ("Spilling the tea on my $700k launch 👀"), with a **handwritten subtitle** under it. A **handwritten side note** in cream, tilted, sits at the left ("(as a SAHM to 3 boys)"). | `title` 158 px at y 15% · `sub` La Belle Aurore 90 px at y 26.8% · `note` cream 84 px, rotated 8°, at y 33% |
-| **Context lines** | Handwritten white text over 2 lines at the top that sums up the current point ("Hindsight is 20/20 and I have a LOT to share!"). It changes every few sentences. | `script` 100 px at y 17.5% |
-| **Section headers** | Serif numbered heading plus a handwritten subtitle ("1. Live workshop / Let's unpack this thing chronologically"). | `section` 140 px at y 15% + `sub` at y 21% |
+| **Captions** | **One word at a time** in a high-contrast **serif**, white with a soft shadow. They sit **left of her face** at about mid-height, never at the bottom. Emphasis words are **cream/yellow** (e.g. "watching", "sponge", "successful"). | Instrument Serif 125 px, centred at x 24%, y 45.5%. Highlights are #F3E6B4. Words shorter than 0.15 s are paired with the next word. |
+| **Hook title** | A big serif headline over 2 lines at the top ("Spilling the tea on my $700k launch 👀"), with a **handwritten subtitle** under it. A **handwritten side note** in cream, tilted, sits at the left ("(as a SAHM to 3 boys)"). | `title` Instrument Serif 198 px at y 19% · `sub` Patrick Hand 118 px at y 31% · `note` Kalam 100 px, cream, rotated 8°, at y 40% |
+| **Context lines** | Handwritten white text over 2 lines at the top that sums up the current point ("Hindsight is 20/20 and I have a LOT to share!"). It changes every few sentences. | `script` Patrick Hand 130 px at y 19% |
+| **Section headers** | Serif numbered heading plus a handwritten subtitle ("1. Live workshop / Let's unpack this thing chronologically"). | `section` 175 px at y 16.5% + `sub` below it |
 | **Proof cards** | Screenshots of real results (revenue dashboard, sales table) pop in over her chest, about 60% of the frame width, while she talks about them. | `image` overlay with a pop animation and soft card shadow, w 0.6, y 0.62 |
 | **Word stickers** | Literal visuals of what she says. For "sponge" she shows 3 sponges in a row at the top. | `emoji` overlay with a `count` option |
 | **Reaction memes** | A short meme clip on hype moments ("LETS GOOOO"), about 70% width, centred low. | `video` overlay, muted by default |
@@ -140,5 +140,8 @@ Settings → Camera → Formats → turn off HDR Video). Ask her to leave a
 - Copyrighted meme clips (movie scenes) carry some risk on a business
   account. Prefer her own clips, or clips she has rights to. Instagram's
   in-app GIF stickers can be added after upload.
-- Fonts are close free matches (Instrument Serif and La Belle Aurore, both
-  OFL), not her exact paid fonts.
+- Fonts are free and OFL: Instrument Serif for titles, plus Patrick Hand and
+  Kalam for handwriting. Jonalyn picked the handwriting fonts over thin script
+  look-alikes because they're easier to read, and wanted everything 25% larger
+  than Jessica's proportions. Never go below these sizes. Keep handwritten
+  lines short (one or two lines) so they stay big.
