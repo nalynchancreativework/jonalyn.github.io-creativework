@@ -34,7 +34,8 @@ never stop.
 1. **Setup (once per session, about 1 min):** `bash scripts/setup.sh`. It prints
    the Python path to use (`~/.cache/reel-edit/venv/bin/python`) and says which
    transcriber is available.
-2. **Get the inputs.** Find the raw video in the uploads folder. If there are
+2. **Get the inputs.** Find the raw video among the uploaded files (Claude
+   Code: the uploads folder; claude.ai chat: the attached files). If there are
    several clips, join them first:
    `ffmpeg -f concat -safe 0 -i list.txt -c:v libx264 -crf 16 -c:a aac raw.mp4`
    (normalise them first if their sizes differ). Ask for the script she read,
@@ -70,9 +71,11 @@ never stop.
    Check that text doesn't overlap, that her face is never covered, and that
    nothing sits in the bottom 25% or the right 15% (Instagram's UI covers
    those). Fix the plan and re-render.
-8. **Deliver:** send the MP4 with SendUserFile, plus the suggested caption and
-   cover frame time. Never commit videos, footage or screenshots to the
-   repository, because it's a public site.
+8. **Deliver:** in Claude Code, send the MP4 with SendUserFile. In the
+   claude.ai chat app, save it to the outputs folder so it shows as a
+   download. Include a suggested post caption and cover frame time. Never
+   commit videos, footage or screenshots to the repository, because it's a
+   public site.
 
 ## Layout rules
 - The **face is sacred.** Overlays go over the chest/torso (y 0.55–0.70) or
