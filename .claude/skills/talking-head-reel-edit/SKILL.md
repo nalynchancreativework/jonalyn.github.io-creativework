@@ -1,6 +1,6 @@
 ---
 name: talking-head-reel-edit
-description: Make finished Instagram Reels / TikToks from Jonalyn's raw talking-to-camera footage in the @the.jessicacarter editing style - one-word serif captions beside the face, big serif title + handwritten notes at the top, hard jump cuts with punch-ins, pop-in screenshot cards, emoji stickers and meme clips on key words, natural colour. Claude does the editing itself (ffmpeg pipeline in scripts/); also use it to write scripts for these reels or review a plan. Trigger on "make/edit my reel", "edit this video", "in my style", "like Jessica's", or an uploaded raw video.
+description: Edit Jonalyn's raw phone videos into finished Instagram Reels / TikToks in her saved style (inspired by @the.jessicacarter) - blush-pink serif titles, readable handwritten lines (Patrick Hand / Kalam), one-word captions beside the face for talking videos, jump cuts with punch-ins, pop-in screenshot cards, emoji stickers, drawn arrows/sparkles, natural colour. Works for talking-to-camera reels and for no-talking reels (hair/outfit reveals, transformations, day-in-the-life). Claude does the editing itself with ffmpeg (scripts/) and sends back the MP4, then suggests trending songs to add in Instagram. Trigger on "edit my reel/video", "make a reel", "in my style", "like Jessica's", "reveal reel", or uploaded raw videos.
 ---
 
 # Talking-head reels in the Jessica Carter style
